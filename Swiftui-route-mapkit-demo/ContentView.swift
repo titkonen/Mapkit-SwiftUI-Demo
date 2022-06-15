@@ -24,6 +24,11 @@ struct ContentView: View {
           .padding()
         }
         HStack {
+          Text(locationManager.locationString)
+            .font(.callout)
+        }
+        
+        HStack {
           Spacer()
           Button(action: {
             locationManager.stopLocationServices()
@@ -120,39 +125,5 @@ struct MapView: UIViewRepresentable {
       return renderer
     }
   }
-  
-//  class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
-//
-//    var locationManager = CLLocationManager()
-//    var previousLocation: CLLocation?
-//
-//    override init() {
-//      super.init()
-//      locationManager.delegate = self
-//      locationManager.desiredAccuracy = kCLLocationAccuracyBest
-//      locationManager.allowsBackgroundLocationUpdates = true
-//    }
-//
-//    func startLocationServices() {
-//      if locationManager.authorizationStatus == .authorizedAlways ||
-//          locationManager.authorizationStatus == .authorizedWhenInUse {
-//        locationManager.startUpdatingLocation()
-//      } else {
-//        locationManager.requestWhenInUseAuthorization()
-//      }
-//    }
-//
-//    func stopLocationServices() {
-//      locationManager.stopUpdatingLocation()
-//    }
-//
-//  }
-  
-  
-  // class LocationManagerStuff: CLLocationManagerDelegate /// NSObject???
-  ///locationManagerDidChangeAuthorization
-  ///didUpdateLocations
-  ///didFailWithError
-  
-  
+
 } ///_Struct MapView UIViewRepresentable
