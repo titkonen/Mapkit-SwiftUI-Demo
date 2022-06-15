@@ -6,18 +6,42 @@ import CoreLocation
 struct ContentView: View {
   @State private var directions: [String] = []
   @State private var showDirections = false
-  
+  @StateObject var locationManager = LocationManager()
+//  @ObservedObject var locationManager: LocationManager
+
     var body: some View {
       VStack {
-        MapView(directions: $directions)
+        HStack {
+          MapView(directions: $directions)
+        }
+        HStack {
+          Button(action: {
+            self.showDirections.toggle()
+          }, label: {
+            Text("Show directions")
+          })
+          .disabled(directions.isEmpty)
+          .padding()
+        }
+        HStack {
+          Spacer()
+          Button(action: {
+            locationManager.stopLocationServices()
+          }, label: {
+            Text("Stop location")
+          })
+          .font(.callout)
+          Spacer()
+          Button(action: {
+            locationManager.startLocationServices()
+          }, label: {
+            Text("Start location")
+          })
+          .font(.callout)
+          Spacer()
+        }
+        
 
-        Button(action: {
-          self.showDirections.toggle()
-        }, label: {
-          Text("Show directions")
-        })
-        .disabled(directions.isEmpty)
-        .padding()
       } ///_Vstack
       .sheet(isPresented: $showDirections, content: {
         VStack {
@@ -46,6 +70,11 @@ struct MapView: UIViewRepresentable {
   func makeCoordinator() -> MapViewCoordinator {
     return MapViewCoordinator()
   }
+  
+  /// Creates LocationManager class access to MapView Struct.
+//  func makeCoordinatorLocationManager() -> LocationManager {
+//    return LocationManager()
+//  }
   
   func makeUIView(context: Context) -> MKMapView {
     let mapView = MKMapView()
@@ -76,8 +105,6 @@ struct MapView: UIViewRepresentable {
       self.directions = route.steps.map { $0.instructions }.filter { !$0.isEmpty }
     }
     
-    
-    
     return mapView
   }
   
@@ -94,37 +121,36 @@ struct MapView: UIViewRepresentable {
     }
   }
   
-  class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
-    
-    var locationManager = CLLocationManager()
-    var previousLocation: CLLocation?
-    
-    override init() {
-      super.init()
-      locationManager.delegate = self
-      locationManager.desiredAccuracy = kCLLocationAccuracyBest
-      locationManager.allowsBackgroundLocationUpdates = true
-    }
-    
-    func startLocationServices() {
-      if locationManager.authorizationStatus == .authorizedAlways ||
-          locationManager.authorizationStatus == .authorizedWhenInUse {
-        locationManager.startUpdatingLocation()
-      } else {
-        locationManager.requestWhenInUseAuthorization()
-      }
-    }
-    
-    func stopLocationServices() {
-      locationManager.stopUpdatingLocation()
-    }
-    
-  }
+//  class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
+//
+//    var locationManager = CLLocationManager()
+//    var previousLocation: CLLocation?
+//
+//    override init() {
+//      super.init()
+//      locationManager.delegate = self
+//      locationManager.desiredAccuracy = kCLLocationAccuracyBest
+//      locationManager.allowsBackgroundLocationUpdates = true
+//    }
+//
+//    func startLocationServices() {
+//      if locationManager.authorizationStatus == .authorizedAlways ||
+//          locationManager.authorizationStatus == .authorizedWhenInUse {
+//        locationManager.startUpdatingLocation()
+//      } else {
+//        locationManager.requestWhenInUseAuthorization()
+//      }
+//    }
+//
+//    func stopLocationServices() {
+//      locationManager.stopUpdatingLocation()
+//    }
+//
+//  }
   
   
   // class LocationManagerStuff: CLLocationManagerDelegate /// NSObject???
   ///locationManagerDidChangeAuthorization
-  ///didEnterRegion
   ///didUpdateLocations
   ///didFailWithError
   
