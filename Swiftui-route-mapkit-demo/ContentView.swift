@@ -1,5 +1,7 @@
 import MapKit
 import SwiftUI
+import Foundation
+import CoreLocation
 
 struct ContentView: View {
   @State private var directions: [String] = []
@@ -8,7 +10,7 @@ struct ContentView: View {
     var body: some View {
       VStack {
         MapView(directions: $directions)
-        
+
         Button(action: {
           self.showDirections.toggle()
         }, label: {
@@ -19,26 +21,17 @@ struct ContentView: View {
       } ///_Vstack
       .sheet(isPresented: $showDirections, content: {
         VStack {
-          Text("Directions")
-            .font(.largeTitle)
-            .bold()
-            .padding()
-          
+          Text("Directions").font(.largeTitle).bold().padding()
           Divider().background(Color.blue)
-          
           List {
             ForEach(0..<self.directions.count, id: \.self) { i in
-              Text(self.directions[i])
-                .padding()
+              Text(self.directions[i]).padding()
             }
-          }
-          
-        }
-      })
-      
-      
+          } ///_List
+        } ///_VStack
+      }) ///_Sheet
     } ///_Body
-}
+} ///_Struct
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
@@ -48,9 +41,7 @@ struct ContentView_Previews: PreviewProvider {
 
 struct MapView: UIViewRepresentable {
   typealias UIViewType = MKMapView
-  
   @Binding var directions: [String]
-  
   
   func makeCoordinator() -> MapViewCoordinator {
     return MapViewCoordinator()
@@ -93,7 +84,7 @@ struct MapView: UIViewRepresentable {
   func updateUIView(_ uiView: MKMapView, context: Context) {
   }
   
-  // MARK: Coordinator Classa
+  // MARK: Coordinator Class
   class MapViewCoordinator: NSObject, MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
       let renderer = MKPolylineRenderer(overlay: overlay)
@@ -103,5 +94,39 @@ struct MapView: UIViewRepresentable {
     }
   }
   
+  class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
+    
+    var locationManager = CLLocationManager()
+    var previousLocation: CLLocation?
+    
+    override init() {
+      super.init()
+      locationManager.delegate = self
+      locationManager.desiredAccuracy = kCLLocationAccuracyBest
+      locationManager.allowsBackgroundLocationUpdates = true
+    }
+    
+    func startLocationServices() {
+      if locationManager.authorizationStatus == .authorizedAlways ||
+          locationManager.authorizationStatus == .authorizedWhenInUse {
+        locationManager.startUpdatingLocation()
+      } else {
+        locationManager.requestWhenInUseAuthorization()
+      }
+    }
+    
+    func stopLocationServices() {
+      locationManager.stopUpdatingLocation()
+    }
+    
+  }
   
-}
+  
+  // class LocationManagerStuff: CLLocationManagerDelegate /// NSObject???
+  ///locationManagerDidChangeAuthorization
+  ///didEnterRegion
+  ///didUpdateLocations
+  ///didFailWithError
+  
+  
+} ///_Struct MapView UIViewRepresentable
